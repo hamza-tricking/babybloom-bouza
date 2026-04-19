@@ -1,0 +1,15 @@
+# MongoDB Configuration
+MONGODB_URI=mongodb://localhost:27017/babybloom
+
+# Admin Credentials
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+
+# Session Secret
+SESSION_SECRET=babybloom-secret-key-change-this-in-production
+
+# Server Port (optional)
+PORT=3001
+
+# Node Environment
+NODE_ENV=development
