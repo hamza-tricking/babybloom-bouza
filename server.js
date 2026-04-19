@@ -1,6 +1,5 @@
 const express = require('express');
 const session = require('express-session');
-const path = require('path');
 const connectDB = require('./config/database');
 
 // Import routes
@@ -28,9 +27,6 @@ app.use(session({
   }
 }));
 
-// Static files for frontend pages
-app.use(express.static(path.join(__dirname, 'public')));
-
 // API routes
 app.use('/api/orders', ordersRouter);
 app.use('/api/auth', authRouter);
@@ -44,24 +40,22 @@ const isAuthenticated = (req, res, next) => {
   }
 };
 
-// Protected routes
+// Protected API routes
 app.get('/api/dashboard', isAuthenticated, (req, res) => {
   res.json({ message: 'Welcome to dashboard', user: req.session.username });
 });
 
-// Serve login page
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-// Serve dashboard page (protected)
-app.get('/dashboard', isAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
-
-// Redirect root to login
-app.get('/', (req, res) => {
-  res.redirect('/login');
+// API info endpoint
+app.get('/api', (req, res) => {
+  res.json({
+    message: 'BabyBloom Backend API',
+    version: '1.0.0',
+    endpoints: {
+      orders: '/api/orders',
+      auth: '/api/auth',
+      dashboard: '/api/dashboard'
+    }
+  });
 });
 
 // Error handling middleware
@@ -76,7 +70,7 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Login page: http://localhost:${PORT}/login`);
-  console.log(`Dashboard: http://localhost:${PORT}/dashboard`);
+  console.log(`BabyBloom Backend API running on port ${PORT}`);
+  console.log(`API endpoints: http://localhost:${PORT}/api`);
+  console.log(`Frontend should be accessed via Next.js dev server`);
 });
