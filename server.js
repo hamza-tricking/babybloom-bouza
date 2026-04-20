@@ -16,7 +16,7 @@ connectDB();
 // CORS middleware
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  const allowedOrigins = ['http://localhost:3000', 'https://babybloom-bouza.vercel.app'];
+  const allowedOrigins = ['http://localhost:3000', 'https://babybloom-bouza.vercel.app', 'https://dmtart.pro'];
   
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
@@ -43,7 +43,9 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: { 
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Set to false for development and cross-domain
+    httpOnly: true,
+    sameSite: 'none', // Allow cross-site cookies
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
