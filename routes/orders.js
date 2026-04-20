@@ -1,26 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const authenticateToken = require('../middleware/auth');
 
 // GET all orders
-router.get('/', async (req, res) => {
-  // Check authentication
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
-  
-  const token = authHeader.substring(7);
-  const jwt = require('jsonwebtoken');
-  
-  try {
-    const decoded = jwt.verify(token, process.env.SESSION_SECRET || 'babybloom-secret-key');
-    if (!decoded.authenticated) {
-      return res.status(401).json({ error: 'Invalid authentication' });
-    }
-  } catch (error) {
-    return res.status(401).json({ error: 'Invalid token' });
-  }
+router.get('/', authenticateToken, async (req, res) => {
   try {
     console.log('=== BACKEND: Fetching all orders ===');
     const orders = await Order.find().sort({ timestamp: -1 });
@@ -88,24 +72,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT update order status
-router.put('/:id/status', async (req, res) => {
-  // Check authentication
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
-  
-  const token = authHeader.substring(7);
-  const jwt = require('jsonwebtoken');
-  
-  try {
-    const decoded = jwt.verify(token, process.env.SESSION_SECRET || 'babybloom-secret-key');
-    if (!decoded.authenticated) {
-      return res.status(401).json({ error: 'Invalid authentication' });
-    }
-  } catch (error) {
-    return res.status(401).json({ error: 'Invalid token' });
-  }
+router.put('/:id/status', authenticateToken, async (req, res) => {
   try {
     const { status } = req.body;
 
