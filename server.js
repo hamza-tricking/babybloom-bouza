@@ -70,7 +70,6 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`BabyBloom Backend API running on port ${PORT}`);
-  console.log(`API endpoints: http://localhost:${PORT}/api`);
-  console.log(`Frontend should be accessed via Next.js dev server`);
+
+  console.log(`Frontend should be accessed via Next.js dev server` ,PORT);
 });
