@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 
-// Simple authentication (you can enhance this with JWT or session management)
+// JWT authentication for cross-domain compatibility
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
   
   console.log('Login attempt - Username:', username);
-  console.log('Login attempt - Session before:', req.session);
-  console.log('Login attempt - Session ID:', req.sessionID);
   console.log('Login attempt - Headers:', req.headers);
 
   // Simple hardcoded credentials (for demo purposes)
@@ -16,37 +15,53 @@ router.post('/login', (req, res) => {
   const validPassword = process.env.ADMIN_PASSWORD || 'admin123';
 
   if (username === validUsername && password === validPassword) {
-    req.session.isAuthenticated = true;
-    req.session.username = username;
-    console.log('Login successful - Session after:', req.session);
+    // Create JWT token
+    const token = jwt.sign(
+      { username, authenticated: true },
+      process.env.SESSION_SECRET || 'babybloom-secret-key',
+      { expiresIn: '24h' }
+    );
     
-    res.json({ success: true, message: 'Login successful' });
+    console.log('Login successful - JWT token created');
+    
+    res.json({ 
+      success: true, 
+      message: 'Login successful',
+      token,
+      username
+    });
   } else {
     console.log('Login failed - Invalid credentials');
     res.status(401).json({ error: 'Invalid credentials' });
   }
 });
 
-// Logout
+// Logout (JWT doesn't need server-side logout)
 router.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Logout failed' });
-    }
-    res.json({ success: true, message: 'Logout successful' });
-  });
+  res.json({ success: true, message: 'Logout successful' });
 });
 
 // Check authentication status
 router.get('/status', (req, res) => {
-  console.log('Auth status check - Session:', req.session);
-  console.log('Auth status check - Session ID:', req.sessionID);
-  console.log('Auth status check - Is authenticated:', req.session?.isAuthenticated);
   console.log('Auth status check - Headers:', req.headers);
   
-  if (req.session && req.session.isAuthenticated) {
-    res.json({ authenticated: true, username: req.session.username });
-  } else {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No JWT token found');
+    return res.json({ authenticated: false });
+  }
+  
+  const token = authHeader.substring(7);
+  
+  try {
+    const decoded = jwt.verify(token, process.env.SESSION_SECRET || 'babybloom-secret-key');
+    console.log('JWT token verified:', decoded);
+    res.json({ 
+      authenticated: true, 
+      username: decoded.username 
+    });
+  } catch (error) {
+    console.log('JWT token verification failed:', error.message);
     res.json({ authenticated: false });
   }
 });
