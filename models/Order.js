@@ -31,6 +31,10 @@ const orderSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  productAr: {
+    type: String,
+    trim: true
+  },
   price: {
     type: Number,
     required: true,

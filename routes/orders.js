@@ -28,7 +28,7 @@ router.get('/:id', async (req, res) => {
 // POST new order
 router.post('/', async (req, res) => {
   try {
-    const { fullName, address, wilaya, phoneNumber, product, price, currency } = req.body;
+    const { fullName, address, wilaya, phoneNumber, product, productAr, price, currency, timestamp } = req.body;
 
     // Validate required fields
     if (!fullName || !address || !wilaya || !phoneNumber || !product || !price) {
@@ -47,12 +47,20 @@ router.post('/', async (req, res) => {
       wilaya,
       phoneNumber,
       product,
+      productAr,
       price,
-      currency: currency || 'DZD'
+      currency: currency || 'DZD',
+      timestamp: timestamp || new Date().toISOString(),
+      status: 'pending'
     });
 
     const savedOrder = await order.save();
-    res.status(201).json(savedOrder);
+    res.status(201).json({ 
+      success: true, 
+      message: 'Order created successfully',
+      order: savedOrder,
+      orderId: savedOrder._id
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to create order' });
   }
