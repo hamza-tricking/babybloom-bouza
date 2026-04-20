@@ -46,6 +46,19 @@ app.get('/api/dashboard', isAuthenticated, (req, res) => {
   res.json({ message: 'Welcome to dashboard', user: req.session.username });
 });
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'BabyBloom Backend API',
+    version: '1.0.0',
+    endpoints: {
+      orders: '/api/orders',
+      auth: '/api/auth',
+      dashboard: '/api/dashboard'
+    }
+  });
+});
+
 // API info endpoint
 app.get('/api', (req, res) => {
   res.json({
