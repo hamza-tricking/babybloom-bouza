@@ -45,7 +45,7 @@ app.use(session({
   cookie: { 
     secure: false, // Set to false for development and cross-domain
     httpOnly: true,
-    sameSite: 'none', // Allow cross-site cookies
+    sameSite: 'lax', // More permissive for development
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));

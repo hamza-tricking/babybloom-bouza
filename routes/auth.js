@@ -19,6 +19,7 @@ router.post('/login', (req, res) => {
     req.session.isAuthenticated = true;
     req.session.username = username;
     console.log('Login successful - Session after:', req.session);
+    
     res.json({ success: true, message: 'Login successful' });
   } else {
     console.log('Login failed - Invalid credentials');
