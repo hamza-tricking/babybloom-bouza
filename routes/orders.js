@@ -75,13 +75,18 @@ router.post('/', async (req, res) => {
 router.put('/:id/status', authenticateToken, async (req, res) => {
   try {
     const { status } = req.body;
+    const orderId = req.params.id;
+    
+    console.log('=== BACKEND: Updating order status ===');
+    console.log('BACKEND: Order ID:', orderId);
+    console.log('BACKEND: New status:', status);
 
     if (!['pending', 'confirmed', 'canceled', 'delivered'].includes(status)) {
       return res.status(400).json({ error: 'Invalid status' });
     }
 
     const order = await Order.findByIdAndUpdate(
-      req.params.id,
+      orderId,
       { status },
       { new: true }
     );
