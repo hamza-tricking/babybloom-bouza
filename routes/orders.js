@@ -33,17 +33,42 @@ router.get('/:id', async (req, res) => {
 // POST new order
 router.post('/', async (req, res) => {
   try {
-    const { fullName, address, wilaya, phoneNumber, product, productAr, price, currency, timestamp } = req.body;
+    const { 
+      fullName, 
+      address, 
+      wilaya, 
+      phoneNumber, 
+      product, 
+      productAr, 
+      price, 
+      shippingPrice,
+      totalPrice,
+      deliveryType,
+      deliveryDays,
+      currency, 
+      timestamp 
+    } = req.body;
+
+    console.log('=== BACKEND: Creating new order ===');
+    console.log('BACKEND: Order data:', JSON.stringify(req.body, null, 2));
 
     // Validate required fields
     if (!fullName || !address || !wilaya || !phoneNumber || !product || !price) {
+      console.log('BACKEND: Missing required fields');
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     // Validate phone number
     const phoneRegex = /^(05|06|07)\d{8}$/;
     if (!phoneRegex.test(phoneNumber)) {
+      console.log('BACKEND: Invalid phone number format');
       return res.status(400).json({ error: 'Invalid phone number format' });
+    }
+
+    // Validate delivery type
+    if (!deliveryType || !['domicile', 'stopDesk'].includes(deliveryType)) {
+      console.log('BACKEND: Invalid delivery type');
+      return res.status(400).json({ error: 'Invalid delivery type' });
     }
 
     const order = new Order({
@@ -54,12 +79,19 @@ router.post('/', async (req, res) => {
       product,
       productAr,
       price,
+      shippingPrice: shippingPrice || 0,
+      totalPrice: totalPrice || price,
+      deliveryType,
+      deliveryDays,
       currency: currency || 'DZD',
       timestamp: timestamp || new Date().toISOString(),
       status: 'pending'
     });
 
+    console.log('BACKEND: Saving order to database...');
     const savedOrder = await order.save();
+    console.log('BACKEND: Order saved successfully:', savedOrder._id);
+    
     res.status(201).json({ 
       success: true, 
       message: 'Order created successfully',
@@ -67,7 +99,8 @@ router.post('/', async (req, res) => {
       orderId: savedOrder._id
     });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create order' });
+    console.error('BACKEND: Error creating order:', error);
+    res.status(500).json({ error: 'Failed to create order', details: error.message });
   }
 });
 
