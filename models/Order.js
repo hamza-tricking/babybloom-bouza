@@ -16,6 +16,12 @@ const orderSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  deliveryType: {
+    type: String,
+    enum: ['domicile', 'stopDesk'],
+    required: true,
+    default: 'domicile'
+  },
   phoneNumber: {
     type: String,
     required: true,
@@ -39,6 +45,20 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 0
+  },
+  shippingPrice: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  totalPrice: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  deliveryDays: {
+    type: String,
+    trim: true
   },
   currency: {
     type: String,
