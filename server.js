@@ -16,16 +16,16 @@ connectDB();
 // CORS middleware
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  const allowedOrigins = ['http://localhost:3000', 'https://babybloom-bouza.vercel.app', 'https://dmtart.pro'];
-  
+  const allowedOrigins = ['http://localhost:3000', 'https://babybloom-bouza.vercel.app', 'https://dmtart.pro', 'https://cho3la-jet.vercel.app'];
+
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
   }
-  
+
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
-  
+
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
   } else {
@@ -42,7 +42,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'babybloom-secret-key',
   resave: false,
   saveUninitialized: false,
-  cookie: { 
+  cookie: {
     secure: false, // Set to false for development and cross-domain
     httpOnly: true,
     sameSite: 'lax', // More permissive for development
@@ -107,5 +107,5 @@ app.use((req, res) => {
 
 app.listen(PORT, () => {
 
-  console.log(`Frontend should be accessed via Next.js dev server` ,PORT);
+  console.log(`Frontend should be accessed via Next.js dev server`, PORT);
 });
